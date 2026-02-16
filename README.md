@@ -98,10 +98,11 @@ pipeline {
     agent any
 
     environment {
-        REGISTRY = "localhost:5000"
-        FRONTEND_IMAGE = "${REGISTRY}/zshop/frontend:latest"
-        CLUSTER_NAME = "zshop-cluster"
-        NAMESPACE = "zshop"
+       REGISTRY = "localhost:5000"
+       BUILD_TAG = "${BUILD_NUMBER}"
+       FRONTEND_IMAGE = "${REGISTRY}/zshop/frontend:${BUILD_TAG}"
+       CLUSTER_NAME = "zshop-cluster"
+       NAMESPACE = "zshop"
     }
 
     stages {
@@ -158,24 +159,27 @@ pipeline {
             }
         }
 
+        // Build and push image local registry
         stage('Build Docker Image') {
-            steps {
-                sh "docker build -t $FRONTEND_IMAGE -f Dockerfile ."
-            }
-        }
+    steps {
+        sh "docker build -t $FRONTEND_IMAGE -f Dockerfile ."
+    }
+}
 
-        stage('Push Docker Image') {
-            steps {
-                sh "docker push $FRONTEND_IMAGE"
-            }
-        }
+stage('Push Docker Image') {
+    steps {
+        sh "docker push $FRONTEND_IMAGE"
+    }
+}
 
-        stage('Deploy to Kubernetes') {
-            steps {
-                sh "kubectl apply -f k8s/frontend-deployment.yaml -n ${NAMESPACE}"
-                sh "kubectl apply -f k8s/frontend-service.yaml -n ${NAMESPACE}"
-            }
-        }
+stage('Deploy to Kubernetes') {
+    steps {
+        sh "kubectl apply -f k8s/frontend-service.yaml -n ${NAMESPACE}"
+        sh "kubectl apply -f k8s/frontend-deployment.yaml -n ${NAMESPACE}"
+        sh "kubectl set image deployment/frontend frontend=${FRONTEND_IMAGE} -n ${NAMESPACE}"
+        sh "kubectl rollout status deployment/frontend -n ${NAMESPACE}"
+    }
+}
 
         stage('Deploy Ingress') {
             steps {
