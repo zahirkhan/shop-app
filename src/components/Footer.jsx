@@ -107,7 +107,7 @@ export function Footer() {
         <hr className="border-secondary my-4" />
 
         <div className="text-center small pb-3">
-          Made with <FaHeart className="text-danger heartbeat" /> © {new Date().getFullYear()} ZShop Software
+          Made with <FaHeart className="text-danger heartbeat" /> © {new Date().getFullYear()} ZShop Software Pvt Ltd
         </div>
 
       </Container>
