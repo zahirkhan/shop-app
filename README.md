@@ -94,6 +94,7 @@ docker network connect kind local-registry
 ## Create a Jenkinsfile in your project:
 ```groovy
 
+
 pipeline {
     agent any
 
@@ -104,21 +105,13 @@ pipeline {
     }
 
     stages {
-
-        stage('Checkout App Code') {
-            steps {
-                git branch: 'main', url: 'https://github.com/zahirkhan/shop-app.git'
-            }
-        }
-
         stage('Checkout K8s Manifests') {
             steps {
-                dir('k8s-manifests') {
+                dir('./') {
                     git branch: 'k8s-simple', url: 'https://github.com/zahirkhan/shop-app.git'
                 }
             }
         }
-
         stage('Ensure Registry Running') {
             steps {
                 script {
@@ -145,6 +138,12 @@ pipeline {
                 }
             }
         }
+        
+         stage('Checkout App Code') {
+            steps {
+                git branch: 'main', url: 'https://github.com/zahirkhan/shop-app.git'
+            }
+        }
 
         stage('Build Docker Image') {
             steps {
@@ -160,6 +159,7 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
+                git branch: 'k8s-simple', url: 'https://github.com/zahirkhan/shop-app.git'
                 sh "kubectl apply -f k8s-manifests/frontend-deployment.yaml"
             }
         }
@@ -178,6 +178,8 @@ pipeline {
         }
     }
 }
+
+
 
 
 ```
