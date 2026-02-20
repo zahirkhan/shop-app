@@ -18,8 +18,8 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: shop-app:latest
-          imagePullPolicy: IfNotPresent
+          image: zahirkhan98/shop-app:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
 ----
