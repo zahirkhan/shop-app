@@ -19,6 +19,7 @@ spec:
       containers:
         - name: frontend
           image: shop-app:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5173
 ---
